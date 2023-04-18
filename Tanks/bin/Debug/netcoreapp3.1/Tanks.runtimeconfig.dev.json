@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\slend\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\slend\\.nuget\\packages"
+    ]
+  }
+}
