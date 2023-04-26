@@ -42,4 +42,9 @@ namespace Tanks
     {
         public Buttet() : base(Image.FromFile("Images\\bullet.png")) { }
     }
+
+    internal sealed class Wall : Cell
+    {
+        public Wall() : base(Image.FromFile("Images\\wall.png")) { }
+    }
 }

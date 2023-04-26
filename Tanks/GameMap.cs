@@ -87,6 +87,18 @@ namespace Tanks
             curForm.Close();
         }
 
+        private void hitHandler(Form form, int xPos, int yPos)
+        {
+            if (map[xPos, yPos].GetType() == typeof(PlayerTank2))
+            {
+                TankDestroyed(form, player2);
+            }
+            if (map[xPos, yPos].GetType() == typeof(PlayerTank1))
+            {
+                TankDestroyed(form, player1);
+            }
+        }
+
         internal async void TankFire(Form form)
         {
             if (player2.actionPoints < 2 || player1.actionPoints < 2) return;
@@ -100,10 +112,8 @@ namespace Tanks
                         int nextPos = player1.playerTank.yPos - 1;
                         while (nextPos >= 0)
                         {
-                            if (map[player1.playerTank.xPos, nextPos].GetType() == typeof(PlayerTank2))
-                            {
-                                TankDestroyed(form, player2);
-                            }
+                            hitHandler(form, player1.playerTank.xPos, nextPos);
+                            
                             ChangeCell(form, player1.playerTank.xPos, nextPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, player1.playerTank.xPos, nextPos, new EmptyCell());
@@ -114,10 +124,8 @@ namespace Tanks
                         nextPos = player1.playerTank.xPos + 1;
                         while (nextPos < mapSize)
                         {
-                            if (map[nextPos, player1.playerTank.yPos].GetType() == typeof(PlayerTank2))
-                            {
-                                TankDestroyed(form, player2);
-                            }
+                            hitHandler(form, nextPos, player1.playerTank.yPos);
+                            
                             ChangeCell(form, nextPos, player1.playerTank.yPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, nextPos, player1.playerTank.yPos, new EmptyCell());
@@ -128,10 +136,8 @@ namespace Tanks
                         nextPos = player1.playerTank.yPos + 1;
                         while (nextPos < mapSize)
                         {
-                            if (map[player1.playerTank.xPos, nextPos].GetType() == typeof(PlayerTank2))
-                            {
-                                TankDestroyed(form, player2);
-                            }
+                            hitHandler(form, player1.playerTank.xPos, nextPos);
+
                             ChangeCell(form, player1.playerTank.xPos, nextPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, player1.playerTank.xPos, nextPos, new EmptyCell());
@@ -142,10 +148,8 @@ namespace Tanks
                         nextPos = player1.playerTank.xPos - 1;
                         while (nextPos >= 0)
                         {
-                            if (map[nextPos, player1.playerTank.yPos].GetType() == typeof(PlayerTank2))
-                            {
-                                TankDestroyed(form, player2);
-                            }
+                            hitHandler(form, nextPos, player1.playerTank.yPos);
+                            
                             ChangeCell(form, nextPos, player1.playerTank.yPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, nextPos, player1.playerTank.yPos, new EmptyCell());
@@ -165,10 +169,8 @@ namespace Tanks
                         int nextPos = player2.playerTank.yPos - 1;
                         while (nextPos >= 0)
                         {
-                            if (map[player2.playerTank.xPos, nextPos].GetType() == typeof(PlayerTank1))
-                            {
-                                TankDestroyed(form, player1);
-                            }
+                            hitHandler(form, player2.playerTank.xPos, nextPos);
+                            
                             ChangeCell(form, player2.playerTank.xPos, nextPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, player2.playerTank.xPos, nextPos, new EmptyCell());
@@ -179,10 +181,8 @@ namespace Tanks
                         nextPos = player2.playerTank.xPos + 1;
                         while (nextPos < mapSize)
                         {
-                            if (map[nextPos, player2.playerTank.yPos].GetType() == typeof(PlayerTank1))
-                            {
-                                TankDestroyed(form, player1);
-                            }
+                            hitHandler(form, nextPos, player2.playerTank.yPos);
+                            
                             ChangeCell(form, nextPos, player2.playerTank.yPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, nextPos, player2.playerTank.yPos, new EmptyCell());
@@ -193,10 +193,8 @@ namespace Tanks
                         nextPos = player2.playerTank.yPos + 1;
                         while (nextPos < mapSize)
                         {
-                            if (map[player2.playerTank.xPos, nextPos].GetType() == typeof(PlayerTank1))
-                            {
-                                TankDestroyed(form, player1);
-                            }
+                            hitHandler(form, player2.playerTank.xPos, nextPos);
+                            
                             ChangeCell(form, player2.playerTank.xPos, nextPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, player2.playerTank.xPos, nextPos, new EmptyCell());
@@ -207,10 +205,8 @@ namespace Tanks
                         nextPos = player2.playerTank.xPos - 1;
                         while (nextPos >= 0)
                         {
-                            if (map[nextPos, player2.playerTank.yPos].GetType() == typeof(PlayerTank1))
-                            {
-                                TankDestroyed(form, player1);
-                            }
+                            hitHandler(form, nextPos, player2.playerTank.yPos);
+                            
                             ChangeCell(form, nextPos, player2.playerTank.yPos, new Buttet());
                             await Task.Delay(50);
                             ChangeCell(form, nextPos, player2.playerTank.yPos, new EmptyCell());
@@ -360,7 +356,11 @@ namespace Tanks
             player2.actionPoints = Player.MAX_ACTION_POINTS_COUNT; 
             player1.actionPoints = Player.MAX_ACTION_POINTS_COUNT;
             updateStatus(form);
+            turnAnnounce();
+        }
 
+        internal void turnAnnounce()
+        {
             if (playerFlag) MessageBox.Show("Now it's player 1 turn!");
             else MessageBox.Show("Now it's player 2 turn!");
         }
