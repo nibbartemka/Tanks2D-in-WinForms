@@ -17,8 +17,8 @@ namespace Tanks
         internal readonly int mapSize;
         private Player player1;
         private Player player2;
-        private TextBox playerStatus1;
-        private TextBox playerStatus2;
+        private Label playerStatus1;
+        private Label playerStatus2;
 
         public GameMap(int mapSize, int cellSize)
         {
@@ -29,25 +29,21 @@ namespace Tanks
             this.player1 = new Player(new Tank(0, 0, 180));
             this.player2 = new Player(new Tank(mapSize - 1, mapSize - 1, 0));
             this.playerFlag = true;
-            this.playerStatus1 = new TextBox
+            this.playerStatus1 = new Label
             {
                 Text = $"player 1: {player1.lives} lives\naction points: {player1.actionPoints}",
                 Location = new Point((int)(cellSize * (mapSize + 0.5)), cellSize),
                 Size = new Size((int)(cellSize * 2.5), cellSize),
                 TabStop = false,
-                ReadOnly = true,
-                BackColor = Color.Green,
-                Multiline = true
+                BackColor = Color.Green
             };
-            this.playerStatus2 = new TextBox
+            this.playerStatus2 = new Label
             {
                 Text = $"player 2: {player2.lives} lives\naction points: {player2.actionPoints}",
                 Location = new Point((int)(cellSize * (mapSize + 0.5)), this.playerStatus1.Location.Y + cellSize),
                 Size = new Size((int)(cellSize * 2.5), cellSize),
                 TabStop = false,
-                ReadOnly = true,
-                BackColor = Color.Orange,
-                Multiline = true
+                BackColor = Color.Orange
             };
         }
 
@@ -101,245 +97,168 @@ namespace Tanks
 
         internal async void TankFire(Form form)
         {
-            if (player2.actionPoints < 2 || player1.actionPoints < 2) return;
-            if (playerFlag)
-            {
-                player1.actionPoints -= 2;
-                updateStatus(form);
-                switch (player1.playerTank.rotation)
-                {
-                    case 0:
-                        int nextPos = player1.playerTank.yPos - 1;
-                        while (nextPos >= 0)
-                        {
-                            hitHandler(form, player1.playerTank.xPos, nextPos);
-                            
-                            ChangeCell(form, player1.playerTank.xPos, nextPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, player1.playerTank.xPos, nextPos, new EmptyCell());
-                            nextPos--;
-                        }
-                        break;
-                    case 90:
-                        nextPos = player1.playerTank.xPos + 1;
-                        while (nextPos < mapSize)
-                        {
-                            hitHandler(form, nextPos, player1.playerTank.yPos);
-                            
-                            ChangeCell(form, nextPos, player1.playerTank.yPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, nextPos, player1.playerTank.yPos, new EmptyCell());
-                            nextPos++;
-                        }
-                        break;
-                    case 180:
-                        nextPos = player1.playerTank.yPos + 1;
-                        while (nextPos < mapSize)
-                        {
-                            hitHandler(form, player1.playerTank.xPos, nextPos);
+            Player curPlayer = (playerFlag) ? player1 : player2;
+            if (curPlayer.actionPoints < 2) return;
 
-                            ChangeCell(form, player1.playerTank.xPos, nextPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, player1.playerTank.xPos, nextPos, new EmptyCell());
-                            nextPos++;
-                        }
-                        break;
-                    case 270:
-                        nextPos = player1.playerTank.xPos - 1;
-                        while (nextPos >= 0)
-                        {
-                            hitHandler(form, nextPos, player1.playerTank.yPos);
-                            
-                            ChangeCell(form, nextPos, player1.playerTank.yPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, nextPos, player1.playerTank.yPos, new EmptyCell());
-                            nextPos--;
-                        }
-                        break;
-                }
-                if (player1.actionPoints == 0) { passTheMove(form); return; }
-            }
-            else
+            curPlayer.actionPoints -= 2; 
+            
+            updateStatus(form);
+                
+            switch (curPlayer.playerTank.rotation)
             {
-                player2.actionPoints -= 2;
-                updateStatus(form);
-                switch (player2.playerTank.rotation)
-                {
-                    case 0:
-                        int nextPos = player2.playerTank.yPos - 1;
-                        while (nextPos >= 0)
-                        {
-                            hitHandler(form, player2.playerTank.xPos, nextPos);
+                case 0:
+                    int nextPos = curPlayer.playerTank.yPos - 1;
+                    while (nextPos >= 0)
+                    {
+                        hitHandler(form, curPlayer.playerTank.xPos, nextPos);
+                        ChangeCell(form, curPlayer.playerTank.xPos, nextPos, new Buttet());
                             
-                            ChangeCell(form, player2.playerTank.xPos, nextPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, player2.playerTank.xPos, nextPos, new EmptyCell());
-                            nextPos--;
-                        }
-                        break;
-                    case 90:
-                        nextPos = player2.playerTank.xPos + 1;
-                        while (nextPos < mapSize)
-                        {
-                            hitHandler(form, nextPos, player2.playerTank.yPos);
-                            
-                            ChangeCell(form, nextPos, player2.playerTank.yPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, nextPos, player2.playerTank.yPos, new EmptyCell());
-                            nextPos++;
-                        }
-                        break;
-                    case 180:
-                        nextPos = player2.playerTank.yPos + 1;
-                        while (nextPos < mapSize)
-                        {
-                            hitHandler(form, player2.playerTank.xPos, nextPos);
-                            
-                            ChangeCell(form, player2.playerTank.xPos, nextPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, player2.playerTank.xPos, nextPos, new EmptyCell());
-                            nextPos++;
-                        }
-                        break;
-                    case 270:
-                        nextPos = player2.playerTank.xPos - 1;
-                        while (nextPos >= 0)
-                        {
-                            hitHandler(form, nextPos, player2.playerTank.yPos);
-                            
-                            ChangeCell(form, nextPos, player2.playerTank.yPos, new Buttet());
-                            await Task.Delay(50);
-                            ChangeCell(form, nextPos, player2.playerTank.yPos, new EmptyCell());
-                            nextPos--;
-                        }
-                        break;
-                }
-                if (player2.actionPoints == 0) { passTheMove(form); return; }
+                        await Task.Delay(50);
+                    
+                        ChangeCell(form, curPlayer.playerTank.xPos, nextPos, new EmptyCell());
+                        nextPos--;
+                    }
+                    break;
+                case 90:
+                    nextPos = curPlayer.playerTank.xPos + 1;
+                    while (nextPos < mapSize)
+                    {
+                        hitHandler(form, nextPos, curPlayer.playerTank.yPos);    
+                        ChangeCell(form, nextPos, curPlayer.playerTank.yPos, new Buttet());
+                        
+                        await Task.Delay(50);
+                        
+                        ChangeCell(form, nextPos, curPlayer.playerTank.yPos, new EmptyCell());
+                        nextPos++;
+                    }
+                    break;
+                case 180:
+                    nextPos = player1.playerTank.yPos + 1;
+                    while (nextPos < mapSize)
+                    {
+                        hitHandler(form, curPlayer.playerTank.xPos, nextPos);
+                        ChangeCell(form, curPlayer.playerTank.xPos, nextPos, new Buttet());
+                        
+                        await Task.Delay(50);
+                        
+                        ChangeCell(form, curPlayer.playerTank.xPos, nextPos, new EmptyCell());
+                        nextPos++;
+                    }
+                    break;
+                case 270:
+                    nextPos = curPlayer.playerTank.xPos - 1;
+                    while (nextPos >= 0)
+                    {
+                        hitHandler(form, nextPos, curPlayer.playerTank.yPos);
+                        ChangeCell(form, nextPos, curPlayer.playerTank.yPos, new Buttet());
+                        
+                        await Task.Delay(50);
+                        
+                        ChangeCell(form, nextPos, curPlayer.playerTank.yPos, new EmptyCell());
+                        nextPos--;
+                    }
+                    break;
             }
+            if (curPlayer.actionPoints == 0) { passTheMove(form); return; }   
         }
 
         internal void TankMove(Form form, string dir)
         {
+            Player curPlayer = (playerFlag) ? player1 : player2;
+
             int mul = (dir == "F") ? 1 : -1;
-            if (playerFlag) // player1
+            
+            if (curPlayer.playerTank.rotation == 0)
             {
-                if (player1.playerTank.rotation == 0)
-                {
-                    int nextPos = player1.playerTank.yPos - mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player1.playerTank.xPos, player1.playerTank.yPos, new EmptyCell());
-                    player1.playerTank.yPos = nextPos;
-                }
-                if (player1.playerTank.rotation == 90)
-                {
-                    int nextPos = player1.playerTank.xPos + mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player1.playerTank.xPos, player1.playerTank.yPos, new EmptyCell());
-                    player1.playerTank.xPos = nextPos;
-                }
-                if (player1.playerTank.rotation == 180)
-                {
-                    int nextPos = player1.playerTank.yPos + mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player1.playerTank.xPos, player1.playerTank.yPos, new EmptyCell());
-                    player1.playerTank.yPos = nextPos;
-                }
-                if (player1.playerTank.rotation == 270)
-                {
-                    int nextPos = player1.playerTank.xPos - mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player1.playerTank.xPos, player1.playerTank.yPos, new EmptyCell());
-                    player1.playerTank.xPos = nextPos;
-                }
-                player1.actionPoints--;
-                updateStatus(form);
-                ChangeCell(form, player1.playerTank.xPos, player1.playerTank.yPos, new PlayerTank1(player1));
-                if (player1.playerTank.xPos == player2.playerTank.xPos && player1.playerTank.yPos == player2.playerTank.yPos) TankDestroyed(form, player2);
-                if (player1.actionPoints == 0) { passTheMove(form); return; }
+                int nextPos = curPlayer.playerTank.yPos - mul * 1;
+                if (nextPos >= mapSize || nextPos < 0) return;
+                ChangeCell(form, curPlayer.playerTank.xPos, curPlayer.playerTank.yPos, new EmptyCell());
+                curPlayer.playerTank.yPos = nextPos;
             }
-            else // player2
+            if (curPlayer.playerTank.rotation == 90)
             {
-                if (player2.playerTank.rotation == 0)
-                {
-                    int nextPos = player2.playerTank.yPos - mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player2.playerTank.xPos, player2.playerTank.yPos, new EmptyCell());
-                    player2.playerTank.yPos = nextPos;
-                }
-                if (player2.playerTank.rotation == 90)
-                {
-                    int nextPos = player2.playerTank.xPos + mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player2.playerTank.xPos, player2.playerTank.yPos, new EmptyCell());
-                    player2.playerTank.xPos = nextPos;
-                }
-                if (player2.playerTank.rotation == 180)
-                {
-                    int nextPos = player2.playerTank.yPos + mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player2.playerTank.xPos, player2.playerTank.yPos, new EmptyCell());
-                    player2.playerTank.yPos = nextPos;
-                }
-                if (player2.playerTank.rotation == 270)
-                {
-                    int nextPos = player2.playerTank.xPos - mul * 1;
-                    if (nextPos >= mapSize || nextPos < 0) return;
-                    ChangeCell(form, player2.playerTank.xPos, player2.playerTank.yPos, new EmptyCell());
-                    player2.playerTank.xPos = nextPos;
-                }
-                player2.actionPoints--;
-                updateStatus(form);
-                ChangeCell(form, player2.playerTank.xPos, player2.playerTank.yPos, new PlayerTank2(player2));
-                if (player1.playerTank.xPos == player2.playerTank.xPos && player1.playerTank.yPos == player2.playerTank.yPos) TankDestroyed(form, player1);
-                if (player2.actionPoints == 0) { passTheMove(form); return; }
+                int nextPos = curPlayer.playerTank.xPos + mul * 1;
+                if (nextPos >= mapSize || nextPos < 0) return;
+                ChangeCell(form, curPlayer.playerTank.xPos, curPlayer.playerTank.yPos, new EmptyCell());
+                curPlayer.playerTank.xPos = nextPos;
             }
+            if (curPlayer.playerTank.rotation == 180)
+            {
+                int nextPos = curPlayer.playerTank.yPos + mul * 1;
+                if (nextPos >= mapSize || nextPos < 0) return;
+                ChangeCell(form, curPlayer.playerTank.xPos, curPlayer.playerTank.yPos, new EmptyCell());
+                curPlayer.playerTank.yPos = nextPos;
+            }
+            if (curPlayer.playerTank.rotation == 270)
+            {
+                int nextPos = curPlayer.playerTank.xPos - mul * 1;
+                if (nextPos >= mapSize || nextPos < 0) return;
+                ChangeCell(form, curPlayer.playerTank.xPos, curPlayer.playerTank.yPos, new EmptyCell());
+                curPlayer.playerTank.xPos = nextPos;
+            }
+                
+            curPlayer.actionPoints--;
+                
+            updateStatus(form);
+
+            Cell curPlayerCell;
+            
+            if (playerFlag) curPlayerCell = new PlayerTank1(curPlayer);
+            else curPlayerCell = new PlayerTank2(curPlayer);
+
+            ChangeCell(form, curPlayer.playerTank.xPos, curPlayer.playerTank.yPos, curPlayerCell);
+                
+            if (player1.playerTank.xPos == player2.playerTank.xPos && player1.playerTank.yPos == player2.playerTank.yPos) 
+                if (playerFlag) TankDestroyed(form, player2);
+                else TankDestroyed(form, player1);
+            
+            if (curPlayer.actionPoints == 0) { passTheMove(form); return; }
         }
 
         private void TankDestroyed(Form form, Player player)
         {
             player.lives--;
+            
             updateStatus(form);
+            
             player1.playerTank.xPos = player1.playerTank.yPos = 0;
             player2.playerTank.xPos = player2.playerTank.yPos = mapSize - 1;
+            
             player1.playerTank.rotation = 180;
             player2.playerTank.rotation = 0;
+            
             form.Controls.Clear();
+            
             DrawStartMap(form);
+            
             player2.actionPoints = Player.MAX_ACTION_POINTS_COUNT;
             player1.actionPoints = Player.MAX_ACTION_POINTS_COUNT;
+            
             updateStatus(form);
         }
 
         private void updateStatus(Form form)
         {
-            form.Controls.Remove(playerStatus1);
-            form.Controls.Remove(playerStatus2);
             playerStatus1.Text = $"player 1: {player1.lives} lives\naction points: {player1.actionPoints}";
             playerStatus2.Text = $"player 2: {player2.lives} lives\naction points: {player2.actionPoints}";
-            form.Controls.Add(playerStatus1);
-            form.Controls.Add(playerStatus2);
         }
 
         internal void TankRotate(Form form, string dir)
         {
-            if (player2.actionPoints == 0 || player1.actionPoints == 0) { passTheMove(form); return; }
-
+            Player curPlayer = (playerFlag) ? player1 : player2;
+            if (curPlayer.actionPoints == 0) { passTheMove(form); return; }
+            
             int value = (dir == "R") ? 90 : -90;
+            curPlayer.playerTank.rotation += value;
+            if (curPlayer.playerTank.rotation < 0) curPlayer.playerTank.rotation = 270;
+            if (curPlayer.playerTank.rotation > 270) curPlayer.playerTank.rotation = 0;
 
+            Cell curPlayerCell;
             if (playerFlag)
-            {
-                player1.playerTank.rotation += value;
-                if (player1.playerTank.rotation < 0) player1.playerTank.rotation = 270;
-                if (player1.playerTank.rotation > 270) player1.playerTank.rotation = 0;
-                ChangeCell(form, player1.playerTank.xPos, player1.playerTank.yPos, new PlayerTank1(player1));
-            }
+                curPlayerCell = new PlayerTank1(player1);
             else
-            {
-                player2.playerTank.rotation += value;
-                if (player2.playerTank.rotation < 0) player2.playerTank.rotation = 270;
-                if (player2.playerTank.rotation > 270) player2.playerTank.rotation = 0;
-                ChangeCell(form, player2.playerTank.xPos, player2.playerTank.yPos, new PlayerTank2(player2));
-            }
+                curPlayerCell = new PlayerTank2(player2);
+            ChangeCell(form, curPlayer.playerTank.xPos, curPlayer.playerTank.yPos, curPlayerCell);
         }
 
         private void ChangeCell(Form form, int xPos, int yPos, Cell cell)
