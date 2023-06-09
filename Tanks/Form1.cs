@@ -19,12 +19,11 @@ namespace Tanks
             this.Width = gameMap.cellSize * (gameMap.mapSize + 4);
             this.Height = gameMap.cellSize * (gameMap.mapSize + 2);
             gameMap.DrawStartMap(this);
-            gameMap.turnAnnounce();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            gameMap.turnAnnounce();
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)

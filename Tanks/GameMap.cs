@@ -250,9 +250,10 @@ namespace Tanks
             
             int value = (dir == "R") ? 90 : -90;
             curPlayer.playerTank.rotation += value;
+            
             if (curPlayer.playerTank.rotation < 0) curPlayer.playerTank.rotation = 270;
             if (curPlayer.playerTank.rotation > 270) curPlayer.playerTank.rotation = 0;
-
+            
             Cell curPlayerCell;
             if (playerFlag)
                 curPlayerCell = new PlayerTank1(player1);
@@ -270,7 +271,7 @@ namespace Tanks
         }
 
         internal void passTheMove(Form form)
-        { 
+        {
             playerFlag = !playerFlag;
             player2.actionPoints = Player.MAX_ACTION_POINTS_COUNT; 
             player1.actionPoints = Player.MAX_ACTION_POINTS_COUNT;
